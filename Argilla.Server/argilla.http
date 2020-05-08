@@ -1,0 +1,38 @@
+﻿
+
+POST https://localhost:5001/api/resolver/resolve
+Content-Type: application/json
+
+{
+    "ServiceName": "service vg",
+    "Properties": {
+    "failp": "1",
+    "b": "2"
+  }
+}
+
+###
+
+POST https://localhost:5001/api/resolver/register
+Content-Type: application/json
+
+{
+  "ServiceName": "service vg",
+  "EndpointSync": "http://carlesi.vg/sync",
+  "EndpointAsync": "http://carlesi.vg/async"
+}
+
+###
+
+POST https://localhost:5001/api/resolver/unregister
+Content-Type: application/json
+
+{
+  "ServiceName": "service vg",
+  "EndpointSync": "http://carlesi.vg/sync",
+  "EndpointAsync": "http://carlesi.vg/async"
+}
+
+###
+
+GET https://localhost:5005/WeatherForecast
