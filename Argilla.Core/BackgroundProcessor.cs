@@ -1,5 +1,5 @@
 ﻿using System;
-using Argilla.Common;
+using Argilla.Core.Common;
 using Argilla.Core.Entities;
 using Argilla.Core.Entities.Setting;
 using Argilla.Core.Exceptions;

@@ -1,5 +1,5 @@
-﻿using Argilla.Common;
-using Argilla.Common.Entities;
+﻿using Argilla.Core.Common;
+using Argilla.Core.Common.Entities;
 using Argilla.Server.Entities;
 using Argilla.Server.Entities.Settings;
 using Argilla.Server.Providers;

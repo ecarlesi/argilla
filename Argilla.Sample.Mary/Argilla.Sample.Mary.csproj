@@ -7,7 +7,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Argilla.Core\Argilla.Core.csproj" />
-    <ProjectReference Include="..\Argilla.Common\Argilla.Common.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="appsettings.json" />

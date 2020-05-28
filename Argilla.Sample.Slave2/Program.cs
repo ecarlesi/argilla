@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading;
-using Argilla.Common;
+using Argilla.Core.Common;
 using Argilla.Core;
 
 namespace Argilla.Sample.Slave2

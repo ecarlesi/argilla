@@ -11,11 +11,8 @@
     <Folder Include="Entities\" />
     <Folder Include="Exceptions\" />
     <Folder Include="Entities\Setting\" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Argilla.Common\Argilla.Common.csproj">
-      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
-    </ProjectReference>
+    <Folder Include="Common\" />
+    <Folder Include="Common\Entities\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\README.md">

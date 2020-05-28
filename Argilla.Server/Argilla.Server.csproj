@@ -16,7 +16,7 @@
     <Compile Remove="SecurityAssertion.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Argilla.Common\Argilla.Common.csproj">
+    <ProjectReference Include="..\Argilla.Core\Argilla.Core.csproj">
       <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
     </ProjectReference>
   </ItemGroup>

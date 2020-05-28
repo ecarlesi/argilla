@@ -1,5 +1,5 @@
 ﻿using System;
-using Argilla.Common.Entities;
+using Argilla.Core.Common.Entities;
 
 namespace Argilla.Server.Entities
 {

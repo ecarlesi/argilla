@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 using System.Threading;
-using Argilla.Common;
+using Argilla.Core.Common;
 using Argilla.Core.Entities;
 using Argilla.Core.Entities.Setting;
 using Microsoft.AspNetCore.Mvc;

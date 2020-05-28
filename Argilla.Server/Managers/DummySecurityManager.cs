@@ -1,5 +1,5 @@
 ﻿using System.Security;
-using Argilla.Common.Entities;
+using Argilla.Core.Common.Entities;
 using Argilla.Server.Entities;
 
 namespace Argilla.Server.Managers

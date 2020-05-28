@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Argilla.Common.Entities;
+using Argilla.Core.Common.Entities;
 
 namespace Argilla.Server.Entities.Settings
 {
