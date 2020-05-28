@@ -7,7 +7,7 @@ At present the project is functional even if it is not performing and unstable. 
 
 The idea of ​​this project stems from an internal need of my cyber security project developed in .NET Core on Linux. I needed to enable various services to communicate without having to manage a catalog and even worse a distributed configuration. I also had the need to have callbacks from calls that can last for hours.
 
-Creating a clay-enabled microservice is very simple, add a reference, a few lines of code and your microservice will be ready.
+Creating a Argilla-enabled microservice is very simple, add a reference, a few lines of code and your microservice will be ready.
 
 The architecture of Argilla is very simple, there is a Resolver server and its endpoint is configured in the various microservices. Argilla automatically publishes the catalog of services so that clients can consume the services without previously knowing their locations. If multiple services implement the same service, the client takes turns invoking the services to distribute the load. The client then takes care not to invoke the offline services and turn the requests to those available.
 
