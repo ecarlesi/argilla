@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace Argilla.Core.Exceptions
 {
     [Serializable]
-    internal class ResolveException : Exception
+    public class ResolveException : Exception
     {
         public ResolveException()
         {

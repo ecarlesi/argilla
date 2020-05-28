@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace Argilla.Core.Exceptions
 {
     [Serializable]
-    internal class RegistrationException : Exception
+    public class RegistrationException : Exception
     {
         public RegistrationException()
         {

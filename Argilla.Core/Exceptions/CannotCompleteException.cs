@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace Argilla.Core.Exceptions
 {
     [Serializable]
-    internal class CannotCompleteException : Exception
+    public class CannotCompleteException : Exception
     {
         public CannotCompleteException()
         {

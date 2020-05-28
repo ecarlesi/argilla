@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace Argilla.Core.Exceptions
 {
     [Serializable]
-    internal class CallbackNullException : Exception
+    public class CallbackNullException : Exception
     {
         public CallbackNullException()
         {

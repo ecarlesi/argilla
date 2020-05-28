@@ -7,6 +7,9 @@ using Argilla.Core.Entities;
 using Argilla.Core.Exceptions;
 using Argilla.Core.Entities.Setting;
 using System.Linq;
+using System.Threading;
+using Microsoft.Extensions.Configuration;
+using System.IO;
 
 namespace Argilla.Core
 {
@@ -17,21 +20,32 @@ namespace Argilla.Core
     {
         private static object LOCK = new object();
 
-        private static Timer registerTimer = null;
+        private static System.Timers.Timer registerTimer = null;
         private static Func<Exception, OnClientErrorBehavior> errorHandler = null;
         private static Dictionary<string, PendingRequest> pending = null;
         private static List<CachedResolveResponse> resolveResponses = null;
+        private static Dictionary<string, int> invocationCounter = new Dictionary<string, int>();
+
+        public static bool WaitForResolver { get; set; }
 
         static Client()
         {
             pending = new Dictionary<string, PendingRequest>();
 
-            registerTimer = new Timer(10000);
+            registerTimer = new System.Timers.Timer(10000);
             registerTimer.Elapsed += OnRegisterTimer;
             registerTimer.AutoReset = true;
             registerTimer.Enabled = true;
 
             resolveResponses = new List<CachedResolveResponse>();
+
+            if (ArgillaSettings.Current == null)
+            {
+                IConfigurationBuilder builder = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("appsettings.json");
+                IConfigurationRoot config = builder.Build();
+
+                ArgillaSettings.Current = config.GetSection("Argilla").Get<ArgillaSettings>();
+            }
         }
 
         #region public methods
@@ -48,39 +62,44 @@ namespace Argilla.Core
         {
             TO outputValue = default;
 
-            #region resolve the service
-
-            ResolveResponse resolveResponse = Resolve(serviceName);
-
-            #endregion
-
-            #region invoke the service
-
             PayloadSync payloadSync = new PayloadSync() { Payload = payload };
 
             string json = CustomJsonSerializer.Serialize(payloadSync);
 
-            Logger.Debug(String.Format("Json: {0}", json));
-
             Exception lastException = null;
 
-            foreach (Endpoint endpoint in resolveResponse.Endpoints)
+            try
             {
-                try
+                Endpoint endpoint = GetFreeEndpoint(serviceName);
+
+                string jsonResult = HttpHelper.Post(endpoint.EndpointSync, json);
+
+                outputValue = CustomJsonSerializer.Deserialize<TO>(jsonResult);
+
+                lastException = null;
+            }
+            catch(Exception ex)
+            {
+                Logger.Error(ex.Message);
+
+                ResolveResponse resolveResponse = Resolve(serviceName);
+
+                foreach (Endpoint endpoint in resolveResponse.Endpoints)
                 {
-                    string jsonResult = HttpHelper.Post(endpoint.EndpointSync, json);
+                    try
+                    {
+                        string jsonResult = HttpHelper.Post(endpoint.EndpointSync, json);
 
-                    Logger.Debug(String.Format("Json result: {0}", jsonResult));
+                        outputValue = CustomJsonSerializer.Deserialize<TO>(jsonResult);
 
-                    outputValue = CustomJsonSerializer.Deserialize<TO>(jsonResult);
+                        lastException = null;
 
-                    lastException = null;
-
-                    break;
-                }
-                catch (Exception e)
-                {
-                    lastException = e;
+                        break;
+                    }
+                    catch (Exception e)
+                    {
+                        lastException = e;
+                    }
                 }
             }
 
@@ -90,8 +109,6 @@ namespace Argilla.Core
 
                 throw lastException;
             }
-
-            #endregion
 
             Logger.Debug(String.Format("Output value: {0}", outputValue));
 
@@ -107,23 +124,16 @@ namespace Argilla.Core
         /// <param name="action">The callback invoked when the response arrive from the service.</param>
         public static void Invoke<T>(string serviceName, T payload, Action<Object> action)
         {
-            #region resolve the service
-
-            ResolveResponse resolveResponse = Resolve(serviceName);
-
-            #endregion
-
-            #region push in the dictionary the pending request
+            if (!Host.IsStarted)
+            {
+                throw new HostNotStartedException();
+            }
 
             string correlationId = Guid.NewGuid().ToString();
 
             pending.Add(correlationId, new PendingRequest() { Action = action });
 
             Logger.Debug(String.Format("Correlation ID: {0}", correlationId));
-
-            #endregion
-
-            #region invoke the service
 
             PayloadAsync payloadAsync = new PayloadAsync()
             {
@@ -134,25 +144,36 @@ namespace Argilla.Core
 
             string json = CustomJsonSerializer.Serialize(payloadAsync);
 
-            Logger.Debug(String.Format("Json: {0}", json));
-
             Exception lastException = null;
 
-            foreach (Endpoint endpoint in resolveResponse.Endpoints)
+            try
             {
-                try
+                Endpoint endpoint = GetFreeEndpoint(serviceName);
+
+                string jsonResult = HttpHelper.Post(endpoint.EndpointAsync, json);
+
+                lastException = null;
+            }
+            catch
+            {
+                ResolveResponse resolveResponse = Resolve(serviceName);
+
+                foreach (Endpoint endpoint in resolveResponse.Endpoints)
                 {
-                    string jsonResult = HttpHelper.Post(endpoint.EndpointAsync, json);
+                    try
+                    {
+                        string jsonResult = HttpHelper.Post(endpoint.EndpointAsync, json);
 
-                    Logger.Debug(String.Format("Json result: {0}", jsonResult));
+                        Logger.Debug(String.Format("Json result: {0}", jsonResult));
 
-                    lastException = null;
+                        lastException = null;
 
-                    break;
-                }
-                catch (Exception e)
-                {
-                    lastException = e;
+                        break;
+                    }
+                    catch (Exception e)
+                    {
+                        lastException = e;
+                    }
                 }
             }
 
@@ -162,8 +183,25 @@ namespace Argilla.Core
 
                 throw lastException;
             }
+        }
 
-            #endregion
+        public static bool CanResolve(string serviceName)
+        {
+            try
+            {
+                ResolveResponse resolveResponse = Resolve(serviceName);
+
+                if (resolveResponse != null && resolveResponse.Endpoints != null && resolveResponse.Endpoints.Count > 0)
+                {
+                    return true;
+                }
+
+                return false;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         #endregion
@@ -213,6 +251,38 @@ namespace Argilla.Core
 
         #region private methods
 
+        private static Endpoint GetFreeEndpoint(string serviceName)
+        {
+            int counter = 0;
+
+            lock (invocationCounter)
+            {
+                if (!invocationCounter.ContainsKey(serviceName))
+                {
+                    invocationCounter.Add(serviceName, 0);
+                }
+
+                counter = invocationCounter[serviceName];
+
+                if (counter == int.MaxValue)
+                {
+                    counter = 0;
+                }
+
+                invocationCounter[serviceName] = ++counter;
+            }
+
+            Logger.Debug("counter: " + counter);
+
+            ResolveResponse resolveResponse = Resolve(serviceName);
+
+            int endpointIndex = counter % resolveResponse.Endpoints.Count;
+
+            Logger.Debug("endpointIndex: " + endpointIndex);
+
+            return resolveResponse.Endpoints[endpointIndex];
+        }
+
         private static void OnRegisterTimer(object sender, ElapsedEventArgs e)
         {
             InternalRegister(true);
@@ -222,6 +292,11 @@ namespace Argilla.Core
         {
             string resolverBaseAddress = ArgillaSettings.Current.Resolver.BaseAddress.EndsWith("/") ? ArgillaSettings.Current.Resolver.BaseAddress : ArgillaSettings.Current.Resolver.BaseAddress + "/";
             string resolverAddress = resolverBaseAddress + (registration ? "register" : "unregister");
+
+            if (ArgillaSettings.Current.Node == null)
+            {
+                return;
+            }
 
             RegisterRequest registerRequest = new RegisterRequest()
             {
@@ -262,7 +337,7 @@ namespace Argilla.Core
 
             if (cachedResolveResponse != null)
             {
-                if (DateTime.Now.Subtract(cachedResolveResponse.Cached).TotalMilliseconds > 1000 * 60)
+                if (DateTime.Now.Subtract(cachedResolveResponse.Cached).TotalMilliseconds > 1000 * 10)
                 {
                     if (resolveResponses.Contains(cachedResolveResponse))
                     {
@@ -302,7 +377,6 @@ namespace Argilla.Core
                 {
                     Manage(new ServiceNotResolvedException(String.Format("Cannot resolve service {0}", serviceName)));
                 }
-
 
                 if (!resolveResponses.Contains(cachedResolveResponse))
                 {

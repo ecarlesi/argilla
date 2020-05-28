@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading;
+
 namespace Argilla.Common
 {
     //TODO use the system logger instead of the System.Console
@@ -35,7 +37,7 @@ namespace Argilla.Common
 
         private static void Write(LogLevel logLevel, string message)
         {
-            Console.WriteLine(String.Format("[{0}] [{1}] {2}", DateTime.Now, logLevel.ToString(), message));
+            Console.WriteLine(String.Format("[{0}] [{1}] [{2}] {3}", DateTime.Now, Thread.CurrentThread.Name, logLevel.ToString(), message));
         }
     }
 

@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -12,18 +13,37 @@ namespace Argilla.Common
         /// <summary>
         /// Execute a POST action with a Json body.
         /// </summary>
-        /// <param name="url">The HTTP resource.</param>
+        /// <param name="endpoint">The HTTP resource.</param>
         /// <param name="json">The Json body.</param>
         /// <returns></returns>
-        public static string Post(string url, string json)
+        public static string Post(string endpoint, string json)
         {
-            HttpClient client = new HttpClient();
+            Logger.Debug("Endpoint: " + endpoint);
+            Logger.Debug("Json: " + json);
 
-            Task<HttpResponseMessage> responseMessage = client.PostAsync(url, new StringContent(json, Encoding.UTF8, "application/json"));
+            using (HttpClient client = new HttpClient())
+            {
+                StringContent stringContent = new StringContent(json, Encoding.UTF8, "application/json");
 
-            HttpResponseMessage success = responseMessage.Result.EnsureSuccessStatusCode();
+                Task<HttpResponseMessage> responseMessage = client.PostAsync(endpoint, stringContent);
 
-            return success.Content.ReadAsStringAsync().Result;
+                try
+                {
+                    HttpResponseMessage success = responseMessage.Result.EnsureSuccessStatusCode();
+
+                    string result = success.Content.ReadAsStringAsync().Result;
+
+                    Logger.Debug("Result: " + result);
+
+                    return result;
+                }
+                catch (Exception e)
+                {
+                    Logger.Error(e.Message);
+
+                    throw;
+                }
+            }
         }
     }
 }

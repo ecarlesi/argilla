@@ -2,6 +2,6 @@
 {
     public enum OnClientErrorBehavior
     {
-        Throw, Suppress
+        Throw, Ignore
     }
 }

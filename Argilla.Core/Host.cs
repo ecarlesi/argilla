@@ -12,6 +12,13 @@ namespace Argilla.Core
     {
         private static IHost host = null;
 
+        public static bool IsStarted { get; private set; }
+
+        static Host()
+        {
+            IsStarted = false;
+        }
+
         /// <summary>
         /// This method must be invoked as first step, before try to use any Argilla's resource.
         /// </summary>
@@ -30,6 +37,8 @@ namespace Argilla.Core
 
             host = CreateHostBuilder().Build();
             host.StartAsync();
+
+            IsStarted = true;
         }
 
         /// <summary>
@@ -41,6 +50,8 @@ namespace Argilla.Core
 
             await host.StopAsync();
             host.Dispose();
+
+            IsStarted = false;
         }
 
         private static IHostBuilder CreateHostBuilder() =>
