@@ -3,7 +3,7 @@ Argilla is a simple distributed bus for the integration between microservices. T
 
 At present the project is functional even if it is not performing and unstable. Your help could be very useful to improve it;)
 
-The idea of ​​this project stems from an internal need of my cyber security project developed in .NET Core on Linux. I needed to enable various services to communicate without having to manage a catalog and even worse a distributed configuration. I also had the need to have callbacks from calls that can last for hours.
+The idea of this project stems from an internal need of my cyber security project developed in .NET Core on Linux. I needed to enable various services to communicate without having to manage a catalog and even worse a distributed configuration. I also had the need to have callbacks from calls that can last for hours.
 
 Creating a Argilla-enabled microservice is very simple, add a reference, a few lines of code and your microservice will be ready.
 
@@ -20,5 +20,4 @@ The Argilla.Sample.Slave1, Argilla.Sample.Slave2 and Argilla.Sample.Master proje
 1) Sample projects.
 2) Write documentation.
 3) Check authorization on incoming request.
-4) Logging support
-5) Cache support
+4) Cache support.
