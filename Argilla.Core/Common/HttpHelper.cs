@@ -10,6 +10,8 @@ namespace Argilla.Core.Common
     /// </summary>
     public static class HttpHelper
     {
+        private static NLog.Logger logger = NLog.Web.NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
+
         /// <summary>
         /// Execute a POST action with a Json body.
         /// </summary>
@@ -18,8 +20,8 @@ namespace Argilla.Core.Common
         /// <returns></returns>
         public static string Post(string endpoint, string json)
         {
-            Logger.Debug("Endpoint: " + endpoint);
-            Logger.Debug("Json: " + json);
+            logger.Debug("Endpoint: " + endpoint);
+            logger.Debug("Json: " + json);
 
             using (HttpClient client = new HttpClient())
             {
@@ -33,13 +35,13 @@ namespace Argilla.Core.Common
 
                     string result = success.Content.ReadAsStringAsync().Result;
 
-                    Logger.Debug("Result: " + result);
+                    logger.Debug("Result: " + result);
 
                     return result;
                 }
                 catch (Exception e)
                 {
-                    Logger.Error(e.Message);
+                    logger.Error(e.Message);
 
                     throw;
                 }

@@ -12,14 +12,14 @@ namespace Argilla.Server.Controllers
     [Route("api/[controller]")]
     public class ResolverController : ControllerBase
     {
-        private ILogger<ResolverController> logger;
+        private static NLog.Logger logger = NLog.Web.NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
+
         private readonly ResolverSettings resolverSettings;
         private readonly ISecurityManager securityManager;
         private readonly IStorageManager storageManager;
 
-        public ResolverController(ILogger<ResolverController> logger, IOptions<ResolverSettings> resolverSettings)
+        public ResolverController(IOptions<ResolverSettings> resolverSettings)
         {
-            this.logger = logger;
             this.resolverSettings = resolverSettings.Value;
 
             securityManager = SecurityProvider.Get(this.resolverSettings.SecurityManager);
@@ -32,7 +32,7 @@ namespace Argilla.Server.Controllers
         {
             securityManager.Verify(new SecurityAssertion() { Payload = endpoint });
 
-            logger.LogInformation("Register: " + CustomJsonSerializer.Serialize(endpoint));
+            logger.Info("Register: " + CustomJsonSerializer.Serialize(endpoint));
 
             storageManager.Register(endpoint);
 
@@ -45,7 +45,7 @@ namespace Argilla.Server.Controllers
         {
             securityManager.Verify(new SecurityAssertion() { Payload = endpoint });
 
-            logger.LogInformation("Unregister: " + CustomJsonSerializer.Serialize(endpoint));
+            logger.Info("Unregister: " + CustomJsonSerializer.Serialize(endpoint));
 
             storageManager.Unregister(endpoint);
 
@@ -58,7 +58,7 @@ namespace Argilla.Server.Controllers
         {
             securityManager.Verify(new SecurityAssertion() { Payload = resolveRequest });
 
-            logger.LogInformation("Resolve: " + CustomJsonSerializer.Serialize(resolveRequest));
+            logger.Info("Resolve: " + CustomJsonSerializer.Serialize(resolveRequest));
 
             ResolveResponse resolveResponse = new ResolveResponse();
 

@@ -22,6 +22,8 @@ namespace Argilla.Sample.Local
 
     class Program
     {
+        private static NLog.Logger logger = NLog.Web.NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
+
         private static readonly string REMOTE_SERVICE_NAME = "local service";
 
         static void Main(string[] args)
@@ -52,7 +54,7 @@ namespace Argilla.Sample.Local
              *****************************************************************************/
             Message syncMessage = new Message() { Text = "sync request" };
             AnotherMessage syncResponse = Client.Invoke<Message, AnotherMessage>(REMOTE_SERVICE_NAME, syncMessage);
-            Logger.Info(string.Format("Response: {0}", syncResponse == null ? "null" : syncResponse.Text));
+            logger.Info(string.Format("Response: {0}", syncResponse == null ? "null" : syncResponse.Text));
 
             /*****************************************************************************
              * This is an example of an asynchronous call. In this case a service exposed 
@@ -64,7 +66,7 @@ namespace Argilla.Sample.Local
             /*****************************************************************************
              * Waits for a newline to end the process.
              *****************************************************************************/
-            Logger.Info(string.Format("Press ENTER to stop the host."));
+            logger.Info(string.Format("Press ENTER to stop the host."));
             Console.ReadLine();
             Host.Stop();
         }
@@ -87,7 +89,7 @@ namespace Argilla.Sample.Local
         {
             Message greeting = CustomJsonSerializer.Deserialize<Message>((string)o);
 
-            Logger.Info(string.Format("OnAsyncCompleted: {0}", greeting.Text));
+            logger.Info(string.Format("OnAsyncCompleted: {0}", greeting.Text));
         }
 
         /*****************************************************************************
@@ -99,7 +101,7 @@ namespace Argilla.Sample.Local
         {
             Message greeting = CustomJsonSerializer.Deserialize<Message>(json);
 
-            Logger.Info(string.Format("OnIncomingMessage: " + greeting.Text));
+            logger.Info(string.Format("OnIncomingMessage: " + greeting.Text));
 
             return CustomJsonSerializer.Serialize(new Message() { Text = "Hello from local" });
         }

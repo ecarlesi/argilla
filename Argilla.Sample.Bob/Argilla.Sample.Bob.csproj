@@ -10,10 +10,16 @@
   </ItemGroup>
   <ItemGroup>
     <None Remove="appsettings.json" />
+    <None Remove="nlog.config" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="nlog.config">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
   </ItemGroup>
 </Project>

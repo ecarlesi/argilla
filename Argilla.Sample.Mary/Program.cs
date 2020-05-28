@@ -7,6 +7,8 @@ namespace Argilla.Sample.Mary
 {
     class Program
     {
+        private static NLog.Logger logger = NLog.Web.NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
+
         private static readonly string REMOTE_SERVICE_NAME = "bob service";
 
         static void Main(string[] args)
@@ -20,11 +22,11 @@ namespace Argilla.Sample.Mary
 
             Greeting2 response = Client.Invoke<Greeting, Greeting2>(REMOTE_SERVICE_NAME, greetingSync);
 
-            Logger.Info(string.Format("Response sync: {0}", response == null ? "null" : response.Message));
+            logger.Info(string.Format("Response sync: {0}", response == null ? "null" : response.Message));
 
             Client.Invoke<Greeting>(REMOTE_SERVICE_NAME, greetingAsync, new Action<object>(OnAsyncCompleted));
 
-            Logger.Info(string.Format("Press ENTER to stop the host."));
+            logger.Info(string.Format("Press ENTER to stop the host."));
 
             Console.ReadLine();
 
@@ -35,14 +37,14 @@ namespace Argilla.Sample.Mary
         {
             Greeting greeting = CustomJsonSerializer.Deserialize<Greeting>((string)o);
 
-            Logger.Info(string.Format("OnAsyncCompleted: {0}", greeting.Message));
+            logger.Info(string.Format("OnAsyncCompleted: {0}", greeting.Message));
         }
 
         public static string OnIncomingMessage(string json)
         {
             Greeting greeting = CustomJsonSerializer.Deserialize<Greeting>(json);
 
-            Logger.Info(string.Format("OnIncomingMessage: " + greeting.Message));
+            logger.Info(string.Format("OnIncomingMessage: " + greeting.Message));
 
             return CustomJsonSerializer.Serialize(new Greeting() { Message = "Hello from Mary" });
         }

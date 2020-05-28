@@ -7,13 +7,15 @@ namespace Argilla.Sample.Slave2
 {
     class Program
     {
+        private static NLog.Logger logger = NLog.Web.NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
+
         static void Main(string[] args)
         {
             Host.Start(OnIncomingMessage);
 
             Thread.Sleep(10000);
 
-            Logger.Info(string.Format("Press ENTER to stop the host."));
+            logger.Info(string.Format("Press ENTER to stop the host."));
 
             Console.ReadLine();
 
@@ -24,7 +26,7 @@ namespace Argilla.Sample.Slave2
         {
             Message greeting = CustomJsonSerializer.Deserialize<Message>(json);
 
-            Logger.Info(string.Format("OnIncomingMessage: " + greeting.Text));
+            logger.Info(string.Format("OnIncomingMessage: " + greeting.Text));
 
             return CustomJsonSerializer.Serialize(new Message() { Text = "Hello from Slave 2" });
         }
