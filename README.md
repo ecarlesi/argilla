@@ -1,6 +1,4 @@
-# Argilla
-
-
+# Project description
 Argilla is a simple distributed bus for the integration between microservices. The adoption of Argilla allows the elimination of endpoints that refine a microservice so that they can be managed more easily.
 
 At present the project is functional even if it is not performing and unstable. Your help could be very useful to improve it;)
@@ -14,9 +12,13 @@ The architecture of Argilla is very simple, there is a Resolver server and its e
 Argilla expects to be able to call a service synchronously and asynchronously. This type of call is essential when you want to invoke a slow service to answer (seconds but also hours or days), just specify the method in which to receive the response and Argilla will manage the return from the service.
 This is a simple bus thought for .NET and especially for microservice.
 
+To get an idea of how it works, check out the examples. 
+The Argilla.Sample.Local project is documented and illustrates a component that in addition to exhibiting a service, also consumes it.
+The Argilla.Sample.Slave1, Argilla.Sample.Slave2 and Argilla.Sample.Master projects, on the other hand, allow you to check the balancing mechanism of calls to multiple services. In fact, try to stop a service and you will see that the requests will move to the other instance. Here you will also find a simple pattern to make a process reliable in case of a Resolver fault. I'm working on making these features transparent in the client component.
 
 ## TODO
-
-1) create useful sample projects
-2) improve this document
-3) add security check to authorize the execution
+1) Sample projects.
+2) Write documentation.
+3) Check authorization on incoming request.
+4) Logging support
+5) Cache support
