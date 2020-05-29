@@ -16,6 +16,16 @@ To get an idea of how it works, check out the examples.
 The Argilla.Sample.Local project is documented and illustrates a component that in addition to exhibiting a service, also consumes it.
 The Argilla.Sample.Slave1, Argilla.Sample.Slave2 and Argilla.Sample.Master projects, on the other hand, allow you to check the balancing mechanism of calls to multiple services. In fact, try to stop a service and you will see that the requests will move to the other instance. Here you will also find a simple pattern to make a process reliable in case of a Resolver fault. I'm working on making these features transparent in the client component.
 
+## Getting started
+### Create the service provider
+TODO
+
+### Create the consumer
+TODO
+
+### Test
+TODO
+
 ## TODO
 1) Sample projects.
 2) Write documentation.

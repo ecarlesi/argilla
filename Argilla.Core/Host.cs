@@ -10,6 +10,8 @@ namespace Argilla.Core
 {
     public class Host
     {
+        private static NLog.Logger logger = NLog.Web.NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
+
         private static IHost host = null;
 
         public static bool IsStarted { get; private set; }
@@ -26,6 +28,15 @@ namespace Argilla.Core
         /// <param name="clientErrorHandler">This callback will be invoked every time an exception will be throwed in the Client component.</param>
         public static void Start(Func<string, string> messageReceivedHandler, Func<Exception, OnClientErrorBehavior> clientErrorHandler = null)
         {
+            logger.Info("Enter Start");
+
+            if (IsStarted)
+            {
+                logger.Info("Host already started");
+
+                return;
+            }
+
             IConfigurationBuilder builder = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("appsettings.json");
             IConfigurationRoot config = builder.Build();
 
@@ -39,6 +50,8 @@ namespace Argilla.Core
             host.StartAsync();
 
             IsStarted = true;
+
+            logger.Info("Host sucessfully started");
         }
 
         /// <summary>
@@ -46,9 +59,15 @@ namespace Argilla.Core
         /// </summary>
         public static async void Stop()
         {
+            if (!IsStarted)
+            {
+                return;
+            }
+
             Client.Unregister();
 
             await host.StopAsync();
+
             host.Dispose();
 
             IsStarted = false;

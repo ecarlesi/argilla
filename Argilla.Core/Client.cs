@@ -34,6 +34,7 @@ namespace Argilla.Core
 
         static Client()
         {
+            Console.WriteLine(DateTime.Now);
             resolver = ResolverManager.CreateInstance();
 
             pending = new Dictionary<string, PendingRequest>();
