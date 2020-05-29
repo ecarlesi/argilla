@@ -19,7 +19,7 @@ namespace Argilla.Core
     {
         private static NLog.Logger logger = NLog.Web.NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
 
-        private static readonly int DEFAULT_RESOLVER_CACHE_LIFETIME = 60; // seconds
+        private static readonly int DEFAULT_RESOLVER_CACHE_LIFETIME = 60;
 
         private static object LOCK = new object();
 
@@ -28,11 +28,14 @@ namespace Argilla.Core
         private static Dictionary<string, PendingRequest> pending = null;
         private static List<CachedResolveResponse> resolveResponses = null;
         private static Dictionary<string, int> invocationCounter = new Dictionary<string, int>();
+        private static IResolver resolver = null;
 
         public static bool WaitForResolver { get; set; }
 
         static Client()
         {
+            resolver = ResolverManager.CreateInstance();
+
             pending = new Dictionary<string, PendingRequest>();
 
             registerTimer = new Timer(10000);
@@ -82,7 +85,7 @@ namespace Argilla.Core
 
                 lastException = null;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 logger.Error(ex.Message);
 
@@ -278,7 +281,7 @@ namespace Argilla.Core
 
             logger.Debug("counter: " + counter);
 
-            ResolveResponse resolveResponse = Resolve(serviceName);
+            ResolveResponse resolveResponse = resolver.Resolve(serviceName);// Resolve(serviceName);
 
             int endpointIndex = counter % resolveResponse.Endpoints.Count;
 
@@ -294,9 +297,6 @@ namespace Argilla.Core
 
         private static void InternalRegister(bool registration)
         {
-            string resolverBaseAddress = ArgillaSettings.Current.Resolver.BaseAddress.EndsWith("/") ? ArgillaSettings.Current.Resolver.BaseAddress : ArgillaSettings.Current.Resolver.BaseAddress + "/";
-            string resolverAddress = resolverBaseAddress + (registration ? "register" : "unregister");
-
             if (ArgillaSettings.Current.Node == null)
             {
                 return;
@@ -309,15 +309,9 @@ namespace Argilla.Core
                 EndpointAsync = ArgillaSettings.Current.Node.EndpointAsync
             };
 
-            string json = CustomJsonSerializer.Serialize(registerRequest);
-
-            logger.Debug(String.Format("{0} request: {1}", (registration ? "Registration" : "Unregistration"), json));
-
             try
             {
-                string result = HttpHelper.Post(resolverAddress, json);
-
-                RegisterResponse registerResponse = CustomJsonSerializer.Deserialize<RegisterResponse>(result);
+                RegisterResponse registerResponse = registration ? resolver.Register(registerRequest) : resolver.Unregister(registerRequest);
 
                 if (registerResponse == null || !registerResponse.Success)
                 {
@@ -341,14 +335,9 @@ namespace Argilla.Core
 
             if (cachedResolveResponse != null)
             {
-                int lifetime = ArgillaSettings.Current.Resolver.CacheLifetime;
+                int cacheLifetime = ArgillaSettings.Current.Resolver.CacheLifetime == 0 ? DEFAULT_RESOLVER_CACHE_LIFETIME : ArgillaSettings.Current.Resolver.CacheLifetime;
 
-                if (lifetime == 0)
-                {
-                    lifetime = DEFAULT_RESOLVER_CACHE_LIFETIME;
-                }
-
-                if (DateTime.Now.Subtract(cachedResolveResponse.Cached).TotalMilliseconds > 1000 * lifetime)
+                if (DateTime.Now.Subtract(cachedResolveResponse.Cached).TotalMilliseconds > 1000 * cacheLifetime)
                 {
                     if (resolveResponses.Contains(cachedResolveResponse))
                     {
@@ -371,18 +360,9 @@ namespace Argilla.Core
                 }
             }
 
-            string resolverBaseAddress = ArgillaSettings.Current.Resolver.BaseAddress.EndsWith("/") ? ArgillaSettings.Current.Resolver.BaseAddress : ArgillaSettings.Current.Resolver.BaseAddress + "/";
-            string resolverAddress = resolverBaseAddress + "resolve";
-
-            logger.Info(String.Format("Resolve service {0} on {1}", serviceName, resolverAddress));
-
             try
             {
-                string result = HttpHelper.Post(resolverAddress, CustomJsonSerializer.Serialize(new ResolveRequest() { ServiceName = serviceName }));
-
-                logger.Debug(String.Format("Resove result: {0}", result));
-
-                ResolveResponse resolveResponse = CustomJsonSerializer.Deserialize<ResolveResponse>(result);
+                ResolveResponse resolveResponse = resolver.Resolve(serviceName);
 
                 if (resolveResponse == null || resolveResponse.Endpoints == null || resolveResponse.Endpoints.Count < 1)
                 {
@@ -408,7 +388,7 @@ namespace Argilla.Core
             {
                 if (e.InnerException != null)
                 {
-                    Manage(new ResolveException(resolverAddress));
+                    Manage(new ResolveException(serviceName));
 
                     return new ResolveResponse();
                 }

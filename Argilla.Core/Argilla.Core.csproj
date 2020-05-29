@@ -13,6 +13,7 @@
     <Folder Include="Entities\Setting\" />
     <Folder Include="Common\" />
     <Folder Include="Common\Entities\" />
+    <Folder Include="Resolvers\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\README.md">
