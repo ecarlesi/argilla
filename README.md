@@ -206,11 +206,11 @@ Replace the contents of the **nlog.config** file with the one shown below (verif
 
 ### Test
 
-1. Open the **Argilla** solution, check the address in the **appsettings.json** inside the **Argilla.Server** is correct, then rebuild the solution
-1. Start the **Argilla.Server** project
-1. Back to the **ArgillaSample** solution and rebuild all
-1. Start the **ArgillaSample.Service**
-1. Start the **ArgillaSample.Client**
+1. open the **Argilla** solution, check the address in the **appsettings.json** inside the **Argilla.Server** is correct, then rebuild the solution
+1. start the **Argilla.Server** project
+1. back to the **ArgillaSample** solution and rebuild all
+1. start the **ArgillaSample.Service**
+1. start the **ArgillaSample.Client**
 
 If everything went well within the **ArgillaSample.Client** log file you will find this message: *Response message is: Echo: Hi with Argilla*
 
