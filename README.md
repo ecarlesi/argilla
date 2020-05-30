@@ -41,10 +41,10 @@ Within the solution **ArgillaSample** creates a new project of type *Console App
 
 In **ArgillaSample.Service** 
 
-1. add a reference to **Argilla.Core**.  
-1. add a reference to **ArgillaSample.Entities**.  
-1. add a new file **appsettings.json**.  
-1. add a new file **nlog.config**.  
+1. add a reference to **Argilla.Core**
+1. add a reference to **ArgillaSample.Entities**
+1. add a new file **appsettings.json**
+1. add a new file **nlog.config**
 
 Replace the contents of the **Program.cs** file with the one shown below
 ```c#
