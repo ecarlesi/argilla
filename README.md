@@ -104,6 +104,7 @@ Replace the contents of the **appsettings.json** file with the one shown below
   }
 }
 ```
+The value of the *Argilla.Node.ServiceName* setting specifies the name that should be known by clients who wish to invoke this service. The service publishes its endpoint by associating it with the name of the service, the client asks to consume the service knowing its name. If an error occurs during the name resolution phase, check that it is written correctly in the client and in the configuration of the services.
 
 Replace the contents of the **nlog.config** file with the one shown below (verify that the path of the log file is compatible with your environment)
 ```xml
@@ -212,6 +213,9 @@ Replace the contents of the **nlog.config** file with the one shown below (verif
 1. Start the **ArgillaSample.Client**
 
 If everything went well within the **ArgillaSample.Client** log file you will find this message: *Response message is: Echo: Hi with Argilla*
+
+### Security
+**Argilla** currently does not implement any security mechanisms. We are working on implementing an authentication / authorization mechanism.
 
 ## TODO
 1. improve documentation and sample projects
