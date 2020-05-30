@@ -17,8 +17,10 @@ The Argilla.Sample.Local project is documented and illustrates a component that 
 The Argilla.Sample.Slave1, Argilla.Sample.Slave2 and Argilla.Sample.Master projects, on the other hand, allow you to check the balancing mechanism of calls to multiple services. In fact, try to stop a service and you will see that the requests will move to the other instance. Here you will also find a simple pattern to make a process reliable in case of a Resolver fault. I'm working on making these features transparent in the client component.
 
 ## Getting started
-This section explains how to create a simple test project consisting of a service provider and a client.  
-This project shows how to make a synchronous call from a client to a microservice. Looking at the examples you will get more confidence than the other features.  
+This section explains how to create a simple test project consisting of a service provider and a client.
+
+This project shows how to make a synchronous call from a client to a microservice. Looking at the examples you will get more confidence than the other features.
+
 Create an empty solution named **ArgillaSample**.  
 Add **Argilla.Core** project as reference to **ArgillaSample** solution.  
 Add a new *Class Library* project to the solution and with name **ArgillaSample.Entities**. This project will contain entities shared between the service and the client.  
