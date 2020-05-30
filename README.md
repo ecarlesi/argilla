@@ -43,8 +43,8 @@ In **ArgillaSample.Service**
 
 1. add a reference to **Argilla.Core**
 1. add a reference to **ArgillaSample.Entities**
-1. add a new file **appsettings.json**
-1. add a new file **nlog.config**
+1. add a new file **appsettings.json**, make sure that the build action for this file is "Content" and that it is copied to the output
+1. add a new file **nlog.config**, make sure that the build action for this file is "Content" and that it is copied to the output
 
 Replace the contents of the **Program.cs** file with the one shown below
 ```c#
@@ -106,7 +106,7 @@ Replace the contents of the **appsettings.json** file with the one shown below
 }
 ```
 
-Replace the contents of the **nlog.config** file with the one shown below
+Replace the contents of the **nlog.config** file with the one shown below (verify that the path of the log file is compatible with your environment)
 ```xml
 <?xml version="1.0" encoding="utf-8" ?>
 <nlog xmlns="http://www.nlog-project.org/schemas/NLog.xsd"
@@ -132,12 +132,16 @@ Replace the contents of the **nlog.config** file with the one shown below
 ```
 
 ### Create the consumer
-Add a new *Console Application*"* project to the **ArgillaSample** solution, we call it **ArgillaSample.Client**.
-In **ArgillaSample.Client** add a reference to **Argilla.Core**.
-In **ArgillaSample.Client** add a reference to **ArgillaSample.Entities**.
+Within the solution **ArgillaSample** creates a new project of type *Console Application* with the name **ArgillaSample.Client**.
 
-Below the code of the **Program.cs** file:
+In **ArgillaSample.Client** 
 
+1. add a reference to **Argilla.Core**
+1. add a reference to **ArgillaSample.Entities**
+1. add a new file **appsettings.json**, make sure that the build action for this file is "Content" and that it is copied to the output
+1. add a new file **nlog.config**, make sure that the build action for this file is "Content" and that it is copied to the output
+
+Replace the contents of the **Program.cs** file with the one shown below
 ```c#
 using System;
 using ArgillaSample.Entities;
@@ -156,8 +160,7 @@ namespace ArgillaSample.Client
 }
 ```
 
-In **ArgillaSample.Client** add a new file **appsettings.json** with this contents:
-
+Replace the contents of the **appsettings.json** file with the one shown below
 ```json
 {
   "Logging": {
@@ -176,8 +179,7 @@ In **ArgillaSample.Client** add a new file **appsettings.json** with this conten
 }
 ```
 
-In **ArgillaSample.Client** add a new file **nlog.config** with this contents (specify the right path): 
-
+Replace the contents of the **nlog.config** file with the one shown below (verify that the path of the log file is compatible with your environment)
 ```xml
 <?xml version="1.0" encoding="utf-8" ?>
 <nlog xmlns="http://www.nlog-project.org/schemas/NLog.xsd"
@@ -202,24 +204,17 @@ In **ArgillaSample.Client** add a new file **nlog.config** with this contents (s
 </nlog>
 ```
 
-Be aware the files are Content and mcopied tooutput dir
-
-
-
-
 ### Test
 
-Start Argilla.Resolver
-Start Argilla Sample Service
-Start Argilla Sample Client
+1. Open the **Argilla** solution, check the address in the **appsettings.json** inside the **Argilla.Server** is correct, then rebuild the solution
+1. Start the **Argilla.Server** project
+1. Back to the **ArgillaSample** solution and rebuild all
+1. Start the **ArgillaSample.Service**
+1. Start the **ArgillaSample.Client**
 
-
-
-5/30/2020 4:58:40 PM
-Response message is: Echo: Hi with Argilla
+If everything went well within the **ArgillaSample.Client** log file you will find this message: *Response message is: Echo: Hi with Argilla*
 
 ## TODO
-1) Sample projects.
-2) Write documentation.
-3) Check authorization on incoming request.
-4) Cache support.
+1. improve documentation and sample projects
+1. improve async mechanism
+1. add security support
