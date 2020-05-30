@@ -18,6 +18,7 @@ The Argilla.Sample.Slave1, Argilla.Sample.Slave2 and Argilla.Sample.Master proje
 
 ## Getting started
 This section explains how to create a simple test project consisting of a service provider and a client. 
+
 This project shows how to make a synchronous call from a client to a microservice. Looking at the examples you will get more confidence than the other features.
 
 Create an empty solution named **ArgillaSample**.
