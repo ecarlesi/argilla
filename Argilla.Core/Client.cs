@@ -137,6 +137,11 @@ namespace Argilla.Core
                 throw new HostNotStartedException();
             }
 
+            if (ArgillaSettings.Current.Node == null)
+            {
+                throw new NodeNotConfiguredException();
+            }
+
             string correlationId = Guid.NewGuid().ToString();
 
             pending.Add(correlationId, new PendingRequest() { Action = action });

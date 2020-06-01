@@ -33,7 +33,7 @@ namespace Argilla.Core.Controllers
         [Route("callbackasync")]
         public ActionResult CallbackAsync([FromBody] PayloadAsync payload)
         {
-            new Thread(new ParameterizedThreadStart(BackgroundProcessor.Process)).Start(payload);
+            ThreadPool.QueueUserWorkItem(BackgroundProcessor.Process, payload);
 
             return new JsonResult(new { Success = true });
         }
