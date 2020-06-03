@@ -11,6 +11,8 @@ namespace Argilla.Core.Controllers
     [Route("api/[controller]")]
     public class NodeController : ControllerBase
     {
+        // TODO add logger, manage exceptions
+
         private ILogger<NodeController> logger;
 
         public NodeController(ILogger<NodeController> logger)
