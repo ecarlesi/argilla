@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using Argilla.Core.Common;
 using Argilla.Core.Entities;
 using Argilla.Core.Entities.Setting;
@@ -28,7 +29,19 @@ namespace Argilla.Core
 
             logger.Info(String.Format("Json argument: {0}", jsonArgument));
 
-            payload.Payload = ArgillaSettings.Current.MessageReceivedHandler.Invoke(jsonArgument);
+
+
+
+            MethodInfo methodInfo = ArgillaSettings.Current.MessageReceivedHandler;
+
+            ParameterInfo[] pis = methodInfo.GetParameters();
+            ParameterInfo argumentPI = pis[0];
+            Type t = pis[0].ParameterType;
+
+            object argument = CustomJsonSerializer.Deserialize(jsonArgument, t);
+            object a = ArgillaSettings.Current.MessageReceivedHandler.Invoke(null, new[] { argument });
+
+            payload.Payload = a;
 
             string json = CustomJsonSerializer.Serialize(payload);
 

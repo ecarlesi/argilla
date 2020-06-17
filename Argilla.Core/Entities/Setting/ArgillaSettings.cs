@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Reflection;
+
 namespace Argilla.Core.Entities.Setting
 {
     public class ArgillaSettings
@@ -7,6 +9,6 @@ namespace Argilla.Core.Entities.Setting
 
         public Resolver Resolver { get; set; }
         public Node Node { get; set; }
-        public Func<string, string> MessageReceivedHandler { get; set; }
+        public MethodInfo MessageReceivedHandler { get; set; }
     }
 }

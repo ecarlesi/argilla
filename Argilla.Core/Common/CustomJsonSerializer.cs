@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System;
+using System.Text.Json;
 
 namespace Argilla.Core.Common
 {
@@ -18,6 +19,17 @@ namespace Argilla.Core.Common
         public static T Deserialize<T>(string json)
         {
             return JsonSerializer.Deserialize<T>(json, options);
+        }
+
+        /// <summary>
+        /// Deserialize the json as argument and return the new instance.
+        /// </summary>
+        /// <param name="json">The string contain the json to deserialize.</param>
+        /// <param name="returnType">Type of the created instance.</param>
+        /// <returns>The deserialized instance.</returns>
+        internal static object Deserialize(string json, Type returnType)
+        {
+            return JsonSerializer.Deserialize(json, returnType);
         }
 
         /// <summary>

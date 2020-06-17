@@ -59,17 +59,16 @@ namespace ArgillaSample.Service
     {
         static void Main(string[] args)
         {
-            Host.Start(OnIncomingMessage);
+            Host.Start<Message, Message>(OnIncomingMessage);
             Thread.Sleep(3000);
             Console.WriteLine(string.Format("Press ENTER to stop the host."));
             Console.ReadLine();
             Host.Stop();
         }
 
-        public static string OnIncomingMessage(string json)
+        public static Message OnIncomingMessage(Message message)
         {
-            Message message = CustomJsonSerializer.Deserialize<Message>(json);
-            return CustomJsonSerializer.Serialize(new Message() { Text = "Echo: " + message.Text });
+            return new Message() { Text = "Echo: " + message.Text };
         }
     }
 }

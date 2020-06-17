@@ -1,4 +1,6 @@
-﻿using System.Text.Json;
+﻿using System;
+using System.Reflection;
+using System.Text.Json;
 using System.Threading;
 using Argilla.Core.Common;
 using Argilla.Core.Entities;
@@ -26,7 +28,16 @@ namespace Argilla.Core.Controllers
         {
             string content = CustomJsonSerializer.Serialize(payload.Payload);
 
-            string result = ArgillaSettings.Current.MessageReceivedHandler.Invoke(content);
+            MethodInfo methodInfo = ArgillaSettings.Current.MessageReceivedHandler;
+
+            ParameterInfo[] pis = methodInfo.GetParameters();
+            ParameterInfo argumentPI = pis[0];
+            Type t = pis[0].ParameterType;
+
+            object o = CustomJsonSerializer.Deserialize(content, t);
+            object a = ArgillaSettings.Current.MessageReceivedHandler.Invoke(null, new[] { o });
+
+            string result = CustomJsonSerializer.Serialize(a);
 
             return new ContentResult() { Content = result, ContentType = "application/json", StatusCode = 200 };
         }
@@ -44,7 +55,9 @@ namespace Argilla.Core.Controllers
         [Route("return")]
         public ActionResult Return([FromBody] PayloadAsync payload)
         {
-            string json = ((JsonElement)payload.Payload).GetString();
+            var a = payload.Payload;
+            var b = (JsonElement)payload.Payload;
+            string json = b.ToString();
 
             Client.Complete(payload.CorrelationId, json);
 

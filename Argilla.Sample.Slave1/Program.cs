@@ -11,7 +11,7 @@ namespace Argilla.Sample.Slave1
 
         static void Main(string[] args)
         {
-            Host.Start(OnIncomingMessage);
+            Host.Start<Message, Message>(OnIncomingMessage);
 
             Thread.Sleep(10000);
 
@@ -22,13 +22,11 @@ namespace Argilla.Sample.Slave1
             Host.Stop();
         }
 
-        public static string OnIncomingMessage(string json)
+        public static Message OnIncomingMessage(Message greeting)
         {
-            Message greeting = CustomJsonSerializer.Deserialize<Message>(json);
-
             logger.Info(string.Format("OnIncomingMessage: " + greeting.Text));
 
-            return CustomJsonSerializer.Serialize(new Message() { Text = "Hello from Slave 1" });
+            return new Message() { Text = "Hello from Slave 1" };
         }
     }
 

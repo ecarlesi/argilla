@@ -13,7 +13,7 @@ namespace Argilla.Sample.Mary
 
         static void Main(string[] args)
         {
-            Host.Start(OnIncomingMessage);
+            Host.Start<Greeting, Greeting2>(OnIncomingMessage);
 
             Thread.Sleep(10000);
 
@@ -40,13 +40,11 @@ namespace Argilla.Sample.Mary
             logger.Info(string.Format("OnAsyncCompleted: {0}", greeting.Message));
         }
 
-        public static string OnIncomingMessage(string json)
+        public static Greeting2 OnIncomingMessage(Greeting greeting)
         {
-            Greeting greeting = CustomJsonSerializer.Deserialize<Greeting>(json);
-
             logger.Info(string.Format("OnIncomingMessage: " + greeting.Message));
 
-            return CustomJsonSerializer.Serialize(new Greeting() { Message = "Hello from Mary" });
+            return new Greeting2() { Message = "Hello from Mary" };
         }
     }
 

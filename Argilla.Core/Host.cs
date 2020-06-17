@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Reflection;
 using Argilla.Core.Entities;
 using Argilla.Core.Entities.Setting;
 using Microsoft.AspNetCore.Hosting;
@@ -26,7 +27,7 @@ namespace Argilla.Core
         /// </summary>
         /// <param name="messageReceivedHandler">This callback will be invoked every time a message are received</param>
         /// <param name="clientErrorHandler">This callback will be invoked every time an exception will be throwed in the Client component.</param>
-        public static void Start(Func<string, string> messageReceivedHandler, Func<Exception, OnClientErrorBehavior> clientErrorHandler = null)
+        public static void Start<TRequest, TResponse>(Func<TRequest, TResponse> messageReceivedHandler, Func<Exception, OnClientErrorBehavior> clientErrorHandler = null)
         {
             logger.Info("Enter Start");
 
@@ -41,7 +42,8 @@ namespace Argilla.Core
             IConfigurationRoot config = builder.Build();
 
             ArgillaSettings.Current = config.GetSection("Argilla").Get<ArgillaSettings>();
-            ArgillaSettings.Current.MessageReceivedHandler = messageReceivedHandler;
+
+            ArgillaSettings.Current.MessageReceivedHandler = messageReceivedHandler.GetMethodInfo();
 
             Client.SetErrorHandler(clientErrorHandler);
             Client.Register();

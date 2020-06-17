@@ -41,7 +41,7 @@ namespace Argilla.Sample.Local
              * The second argument (optional) is the method that must be invoked when a 
              * transmission / serialization error occurs.
              *****************************************************************************/
-            Host.Start(OnIncomingMessage, OnError);
+            Host.Start<Message, AnotherMessage>(OnIncomingMessage, OnError);
 
             /*****************************************************************************
              * This delay allows internal components to start correctly.
@@ -97,23 +97,27 @@ namespace Argilla.Sample.Local
          * argument is the Json containing the request message and you must resturn a
          * Json string which will be returned to the client.
          *****************************************************************************/
-        public static string OnIncomingMessage(string json)
+        public static AnotherMessage OnIncomingMessage(Message message)
         {
-            Message greeting = CustomJsonSerializer.Deserialize<Message>(json);
+            logger.Info(string.Format("OnIncomingMessage: " + message.Text));
 
-            logger.Info(string.Format("OnIncomingMessage: " + greeting.Text));
-
-            return CustomJsonSerializer.Serialize(new Message() { Text = "Hello from local" });
+            return new AnotherMessage() { Text = "Hello from local" };
         }
     }
 
     public class Message
     {
+        public Message()
+        { }
+
         public string Text { get; set; }
     }
 
     public class AnotherMessage
     {
+        public AnotherMessage()
+        { }
+
         public string Text { get; set; }
     }
 }
